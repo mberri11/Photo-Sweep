@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+        Photo Sweep declares four permissions, and one compatibility shim.
+
+        READ_MEDIA_IMAGES is the whole point: the app cannot show a photo it cannot read,
+        and cannot move one to Trash it cannot address.
+
+        INTERNET / ACCESS_NETWORK_STATE / AD_ID exist for one reason only — the Google
+        Mobile Ads SDK. No app code opens a socket.
+    -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
+    <!--
+        API 30-32 compatibility. READ_MEDIA_IMAGES was introduced in API 33 and is inert
+        below it, so on Android 11 and 12 this is the only permission that can read the
+        gallery. Without it the app installs on its own minSdk and can never see a single
+        photo. Capped at 32 so it is not requested on any release that has the granular
+        media permissions, which keeps the Data safety form honest.
+    -->
+    <uses-permission
+        android:name="android.permission.READ_EXTERNAL_STORAGE"
+        android:maxSdkVersion="32" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
+
+    <!--
+        Deliberately NOT declared. Each of these is an omission with a reason, not an
+        oversight, and each should be re-argued rather than quietly added:
+
+        READ_MEDIA_VIDEO
+            v1 is images only. Requesting a permission the app never uses creates a
+            Data-safety mismatch, and reviewers check.
+
+        MANAGE_MEDIA
+            Without it, each batch trash shows one system confirmation dialog. The app
+            already shows its own confirm screen, so one more dialog per batch is
+            acceptable friction — and skipping it keeps a special-access declaration off
+            the very first submission. Revisit in 1.1 if reviews complain.
+
+        READ_MEDIA_VISUAL_USER_SELECTED
+            Not declared, but the platform adds it implicitly on API 34+ for any app that
+            requests READ_MEDIA_IMAGES. That implicit grant is exactly how partial access
+            is detected — see MediaPermission. A gallery cleaner that can see 12 of 4,000
+            photos is useless, so the app reports that state instead of pretending.
+    -->
+
+    <application
+        android:name=".PhotoSweepApplication"
+        android:allowBackup="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.PhotoSweep.Starting">
+
+        <!--
+            Required by the Mobile Ads SDK. Without it MobileAdsInitProvider throws while
+            the process is still binding and the app dies before onCreate — there is no
+            code path that can catch it. The value is a build-type placeholder: debug uses
+            Google's published sample App ID, release refuses to build without a real one.
+        -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="${admobAppId}" />
+
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|uiMode"
+            android:theme="@style/Theme.PhotoSweep.Starting"
+            android:windowSoftInputMode="adjustResize">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+    </application>
+
+</manifest>

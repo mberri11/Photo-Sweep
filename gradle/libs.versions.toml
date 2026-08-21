@@ -1,0 +1,65 @@
+[versions]
+# Toolchain — AGP 8.13.2 pairs with the Gradle 8.14.3 wrapper and supports compileSdk 36.
+agp = "8.13.2"
+# Kotlin 2.3.20 is the exact compiler KSP 2.3.11 is built against. The Compose compiler
+# ships as the `org.jetbrains.kotlin.plugin.compose` Gradle plugin, versioned in lockstep
+# with the Kotlin compiler — there is no composeOptions.kotlinCompilerExtensionVersion.
+kotlin = "2.3.20"
+ksp = "2.3.11"
+
+composeBom = "2026.06.01"
+# core 1.19.0 and lifecycle 2.11.0 raise minCompileSdk to 37 and demand AGP 9.1.0+.
+# compileSdk 36 is deliberate, so both are held at their last 36-compatible release:
+# core 1.18.0 (minCompileSdk=36) and lifecycle 2.10.0 (minCompileSdk=35).
+coreKtx = "1.18.0"
+coreSplashscreen = "1.0.1"
+activityCompose = "1.13.0"
+lifecycle = "2.10.0"
+room = "2.8.4"
+datastore = "1.2.1"
+coil = "3.5.0"
+playServicesAds = "25.4.0"
+userMessagingPlatform = "4.0.0"
+
+junit = "4.13.2"
+coroutines = "1.11.0"
+
+[libraries]
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscreen", version.ref = "coreSplashscreen" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+
+androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycle" }
+androidx-lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "lifecycle-viewmodel-compose", version.ref = "lifecycle" }
+
+# Compose — versions come from the BOM, so these carry no version of their own.
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+androidx-compose-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-compose-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation" }
+androidx-compose-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-compose-material3-windowSizeClass = { group = "androidx.compose.material3", name = "material3-window-size-class" }
+androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+
+androidx-room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
+androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+androidx-room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+
+androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "datastore" }
+
+coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
+
+play-services-ads = { group = "com.google.android.gms", name = "play-services-ads", version.ref = "playServicesAds" }
+user-messaging-platform = { group = "com.google.android.ump", name = "user-messaging-platform", version.ref = "userMessagingPlatform" }
+
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
+androidx-room-testing = { group = "androidx.room", name = "room-testing", version.ref = "room" }
+androidx-compose-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+androidx-compose-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }

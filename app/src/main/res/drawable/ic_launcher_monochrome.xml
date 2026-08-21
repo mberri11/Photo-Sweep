@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Themed-icon layer (Android 13+). A monochrome layer is drawn as a single tinted shape, so
+    the full artwork cannot be reused here — its gradients and blurs would flatten into one
+    solid blob. This is the same idea reduced to a silhouette: one framed photo, sun, horizon.
+    Content stays inside the central 72dp safe zone.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108"
+    android:tint="#FFFFFFFF">
+
+    <!-- Card frame: outer rounded rect with an inner rect punched out. -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:fillType="evenOdd"
+        android:pathData="M40,28 L68,28 A8,8 0 0 1 76,36 L76,72 A8,8 0 0 1 68,80 L40,80 A8,8 0 0 1 32,72 L32,36 A8,8 0 0 1 40,28 Z M39,35 L39,73 L69,73 L69,35 Z" />
+
+    <!-- Sun. -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M47,47 m-6,0 a6,6 0 1,0 12,0 a6,6 0 1,0 -12,0 Z" />
+
+    <!-- Horizon. -->
+    <path
+        android:fillColor="#FFFFFFFF"
+        android:pathData="M39,73 L50,58 L57,66 L62,60 L69,73 Z" />
+</vector>

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Photo Sweep</string>
+
+    <!--
+        Pre-permission rationale, screen 02.
+
+        Every claim below is checkable by the user in about fifteen seconds, which is the
+        point. An earlier draft said the app "ships without the internet permission" — false
+        in any build containing AdMob, verifiable as false from the system settings, and a
+        misrepresentation risk on the Play Store. The replacement is a stronger promise
+        because it is specific about the one thing that does touch the network.
+    -->
+    <string name="permission_title">Photo Sweep needs to see your gallery.</string>
+    <string name="permission_body">It opens your photos one at a time so you can swipe through them, and it needs the media permission to read the files and to move the ones you sweep into Trash.</string>
+
+    <string name="permission_point_privacy_title">Your photos never leave your phone.</string>
+    <string name="permission_point_privacy_body">There is no account, no cloud, no upload. Photo Sweep has no code that can send a photo anywhere. The only thing that uses the network is Google\'s ad service.</string>
+
+    <string name="permission_point_analysis_title">No photo is analysed for content.</string>
+    <string name="permission_point_analysis_body">No faces, no places, no labels. Photo Sweep reads file names, dates and sizes to build the piles, and compares images to each other on your phone to find duplicates.</string>
+
+    <string name="permission_point_consent_title">Nothing goes without your word.</string>
+    <string name="permission_point_consent_body">Swiping only marks a photo. You confirm once at the end, and everything then waits 30 days in Android\'s Trash where you can put it back.</string>
+
+    <string name="permission_allow">Allow access to photos</string>
+    <string name="permission_not_now">Not now</string>
+    <string name="permission_footer">Android will ask you next. You can take the permission back any time in Settings → Apps → Photo Sweep.</string>
+
+    <!-- Shown once Android has stopped offering the dialog, so the button leads somewhere real. -->
+    <string name="permission_open_settings">Open Settings</string>
+    <string name="permission_footer_settings">Android will not ask again. The permission can be turned on in Settings → Apps → Photo Sweep → Permissions.</string>
+
+    <!--
+        Android 14+ partial access. The app must never quietly show a pile list built from
+        twelve photos: an almost-empty home screen looks like a broken app, and the user has
+        no way to guess why.
+    -->
+    <string name="permission_partial_heading">Photo Sweep can only see part of your gallery.</string>
+    <plurals name="permission_partial_title">
+        <item quantity="one">Photo Sweep can only see %1$d photo right now.</item>
+        <item quantity="other">Photo Sweep can only see %1$d photos right now.</item>
+    </plurals>
+    <string name="permission_partial_body">It needs to see all of them to build piles and find duplicates.</string>
+    <string name="permission_partial_action">Open permission settings</string>
+    <string name="permission_partial_footer">Choose “Allow all” under Photos and videos.</string>
+
+    <!--
+        Settings → Privacy. Same rule as the rationale: claim only what the user can verify,
+        and name the one exception rather than hiding it.
+    -->
+    <string name="settings_privacy_caption">Privacy</string>
+    <string name="settings_privacy_body">Photo Sweep has no upload code. The only network traffic is Google\'s ad service.</string>
+    <string name="settings_permissions_row">Permissions</string>
+    <string name="settings_permissions_row_subtitle">Check what Photo Sweep can access</string>
+
+    <!-- Placeholder for the granted state until the home screen lands. -->
+    <plurals name="gallery_visible_count">
+        <item quantity="one">%1$d photo visible</item>
+        <item quantity="other">%1$d photos visible</item>
+    </plurals>
+    <string name="gallery_counting">Reading your gallery…</string>
+
+    <!-- Sweep screen. -->
+    <string name="sweep_index">%1$d / %2$d</string>
+    <string name="sweep_chip">%1$d · %2$s</string>
+    <string name="sweep_left_label">← SWEEP</string>
+    <string name="sweep_right_label">KEEP →</string>
+    <string name="sweep_kept_tally">%1$d kept</string>
+    <string name="sweep_close">Close</string>
+    <string name="sweep_plus_one">+1</string>
+    <string name="sweep_marked">Marked for sweep</string>
+    <string name="sweep_kept">Kept</string>
+    <string name="sweep_undo">UNDO</string>
+    <string name="sweep_toast_detail">%1$s · %2$s</string>
+    <string name="sweep_finished_title">Pile finished.</string>
+    <string name="sweep_finished_body">%1$d marked for sweep, %2$d kept. Nothing has been deleted — you confirm before anything moves.</string>
+    <string name="sweep_finished_action">Review sweep</string>
+    <string name="sweep_empty">This pile is empty.</string>
+
+    <!-- Temporary host screen. Replaced by the designed home screen in a later stage. -->
+    <string name="piles_title">Piles</string>
+    <string name="piles_subtitle">%1$d photos · %2$s</string>
+    <string name="piles_pile_line">%1$d photos · %2$s</string>
+    <string name="piles_empty">No piles yet. Seed the test gallery to try the sweep loop.</string>
+    <string name="piles_seed">Seed 500 test photos</string>
+    <string name="piles_wipe">Wipe test gallery</string>
+    <string name="piles_scope_test">Scope: test gallery</string>
+    <string name="piles_scope_all">Scope: whole gallery</string>
+    <string name="piles_working">Working…</string>
+    <string name="piles_refresh">Refresh</string>
+    <string name="pile_screenshots">Screenshots</string>
+    <string name="pile_whatsapp">WhatsApp</string>
+    <string name="pile_downloads">Downloads</string>
+    <string name="pile_duplicates">Duplicates</string>
+
+    <!-- Confirm, screen 08. The one destructive decision in the app. -->
+    <string name="confirm_eyebrow">END OF PILE</string>
+    <string name="confirm_title_lead">Delete </string>
+    <plurals name="confirm_title_photos">
+        <item quantity="one">%1$d photo</item>
+        <item quantity="other">%1$d photos</item>
+    </plurals>
+    <string name="confirm_title_join">" — free "</string>
+    <string name="confirm_sub">You swept these out of %1$s. %2$s stay where they are.</string>
+    <plurals name="confirm_sub_kept">
+        <item quantity="one">%1$d photo</item>
+        <item quantity="other">%1$d photos</item>
+    </plurals>
+    <string name="confirm_note">They move to Trash and are removed for good after 30 days. Restore any of them before then.</string>
+    <plurals name="confirm_action">
+        <item quantity="one">Delete %1$d photo</item>
+        <item quantity="other">Delete %1$d photos</item>
+    </plurals>
+    <string name="confirm_review">Review again</string>
+    <string name="confirm_empty">Nothing is marked for sweeping.</string>
+    <string name="confirm_back">Back</string>
+    <string name="confirm_pull_back">Tap a photo to pull it back out.</string>
+
+    <!--
+        Success, screen 09.
+
+        The caption is "SWEPT", never "SPACE FREED". A trashed photo still occupies storage
+        for thirty days, so a user who sweeps 480 MB and then checks Settings → Storage sees
+        no change. Claiming the space is already free earns a one-star review saying the app
+        does nothing, and the user would be right.
+    -->
+    <string name="success_caption">SWEPT</string>
+    <string name="success_note">Space frees up when Trash empties.</string>
+    <plurals name="success_sub">
+        <item quantity="one">%1$d photo swept</item>
+        <item quantity="other">%1$d photos swept</item>
+    </plurals>
+    <string name="success_alltime">ALL TIME</string>
+    <string name="success_lifetime">%1$s photos swept since %2$s</string>
+    <string name="success_empty_trash">Empty Trash now · %1$s</string>
+    <string name="success_trash_empty">Trash is empty.</string>
+    <string name="success_back">Back to piles</string>
+    <string name="success_nothing_title">Nothing was moved.</string>
+    <string name="success_nothing_body">The system did not trash any photos, so your marks are untouched. You can try again.</string>
+    <string name="success_partial">%1$d of %2$d were moved. The rest kept their marks.</string>
+
+    <!--
+        Settings, screen 12. There is no retention setting: Android owns the 30 days and it
+        is not configurable. This static line replaces the row that used to offer 7/30/60.
+    -->
+    <string name="settings_trash_line">Trash is Android\'s own. Swept photos also appear in Google Photos → Bin.</string>
+
+    <!-- Home, screen 03. Same honesty rule as the success screen. -->
+    <string name="home_stat_caption">SWEPT</string>
+    <string name="home_stat_note">Space frees up when Trash empties.</string>
+    <string name="home_stat_never">Nothing swept yet.</string>
+</resources>

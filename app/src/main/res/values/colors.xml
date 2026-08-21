@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Photo Sweep is a black app. Photos are the only colour on screen. -->
+    <color name="ps_black">#FF000000</color>
+    <color name="ps_white">#FFFFFFFF</color>
+</resources>

@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="photo-sweep">
+  <defs>
+    <filter id="blurA" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="4"/></filter>
+    <filter id="blurB" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="9"/></filter>
+    <filter id="blurC" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="18"/></filter>
+    <linearGradient id="psBg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#101828"/><stop offset="100%" stop-color="#080C14"/>
+    </linearGradient>
+    <linearGradient id="psSky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#28608A"/><stop offset="100%" stop-color="#1A2C55"/>
+    </linearGradient>
+    <radialGradient id="psSun" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#FFE49A"/><stop offset="60%" stop-color="#FFC94D"/><stop offset="100%" stop-color="#FFC94D" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="psTrail" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0%" stop-color="#FF6A55" stop-opacity="0"/><stop offset="60%" stop-color="#FF6A55" stop-opacity=".8"/><stop offset="100%" stop-color="#FFC2B0"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#psBg)"/>
+  <path d="M52 418 C150 424 232 372 296 272" fill="none" stroke="url(#psTrail)" stroke-width="34" stroke-linecap="round" filter="url(#blurB)"/>
+  <path d="M52 418 C150 424 232 372 296 272" fill="none" stroke="url(#psTrail)" stroke-width="12" stroke-linecap="round" filter="url(#blurA)"/>
+  <path d="M84 452 C176 452 248 404 304 320" fill="none" stroke="url(#psTrail)" stroke-width="9" stroke-linecap="round" filter="url(#blurA)" opacity=".6"/>
+  <g transform="rotate(-13 236 258)">
+    <rect x="132" y="140" width="208" height="236" rx="24" fill="#121A28" stroke="#26344A" stroke-width="7"/>
+  </g>
+  <g transform="rotate(-4 246 258)">
+    <rect x="140" y="140" width="208" height="236" rx="24" fill="#141D2E" stroke="#2C3C55" stroke-width="7"/>
+  </g>
+  <g transform="rotate(10 288 256)">
+    <rect x="166" y="132" width="214" height="242" rx="24" fill="#0E1420" stroke="#E6EDF5" stroke-width="8"/>
+    <rect x="182" y="148" width="182" height="210" rx="14" fill="url(#psSky)"/>
+    <circle cx="240" cy="210" r="44" fill="url(#psSun)" filter="url(#blurA)"/>
+    <circle cx="240" cy="210" r="21" fill="#FFE49A"/>
+    <path d="M182 358 L240 280 L282 328 L310 298 L364 358 Z" fill="#12203A"/>
+  </g>
+  <circle cx="112" cy="356" r="4.5" fill="#FF8A72" opacity=".95"/>
+  <circle cx="158" cy="404" r="3.2" fill="#FFB09A" opacity=".75"/>
+  <circle cx="432" cy="118" r="3.6" fill="#7FD6B0" opacity=".8" filter="url(#blurA)"/>
+</svg>
