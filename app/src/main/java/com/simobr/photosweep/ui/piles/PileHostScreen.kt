@@ -1,12 +1,9 @@
 package com.simobr.photosweep.ui.piles
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,9 +22,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
@@ -39,12 +34,11 @@ import com.simobr.photosweep.data.db.PhotoSweepDatabase
 import com.simobr.photosweep.data.media.MediaRepository
 import com.simobr.photosweep.data.piles.Pile
 import com.simobr.photosweep.data.piles.PileBuilder
-import com.simobr.photosweep.debug.GallerySeeder
+import com.simobr.photosweep.debug.DebugPileTools
 import com.simobr.photosweep.ui.format.PhotoFormat
 import com.simobr.photosweep.ui.theme.PsColor
 import com.simobr.photosweep.ui.theme.PsDim
 import com.simobr.photosweep.ui.theme.PsType
-import kotlinx.coroutines.launch
 
 /**
  * Temporary host for the sweep loop.
@@ -52,7 +46,9 @@ import kotlinx.coroutines.launch
  * This is scaffolding, not the designed home screen — it exists so the sweep gesture can be
  * driven on a real device against real piles before the home screen is built. The debug
  * seeding controls are the point: they are how the destructive stages get exercised without
- * pointing them at anybody's actual camera roll.
+ * pointing them at anybody's actual camera roll. They live in `DebugPileTools`, which has a
+ * do-nothing twin in `src/release/` — this screen calls the same two entry points in both
+ * variants and the release build compiles neither the seeder nor the scope flag.
  */
 @Composable
 fun PileHostScreen(
@@ -61,17 +57,14 @@ fun PileHostScreen(
     modifier: Modifier = Modifier,
 ) {
     val context = LocalContext.current
-    val scope = rememberCoroutineScope()
 
     var piles by remember { mutableStateOf<List<Pile>?>(null) }
     var reloadKey by remember { mutableIntStateOf(0) }
     var busy by remember { mutableStateOf<String?>(null) }
 
-    // Debug default: only the seeded test gallery. Without it the piles are the tester's own
-    // 6,000 photos, and a session spent exercising the sweep gesture leaves marks all over
-    // their real camera roll. Nothing is deleted at this stage, but "nothing is deleted yet"
-    // is a poor reason to make someone's own library the test fixture.
-    var testGalleryOnly by remember { mutableStateOf(BuildConfig.DEBUG) }
+    // Bumped by the debug scope chip so the pile query re-runs. In a release build nothing
+    // ever bumps it, because there is no chip and no scope to change.
+    var scopeKey by remember { mutableIntStateOf(0) }
     var lifetime by remember { mutableStateOf<Triple<Long, Int, Long?>?>(null) }
 
     LaunchedEffect(refreshKey) {
@@ -79,17 +72,11 @@ fun PileHostScreen(
         lifetime = Triple(stats.lifetimeBytes(), stats.lifetimePhotos(), stats.firstSweepAtMs())
     }
 
-    LaunchedEffect(reloadKey, refreshKey, testGalleryOnly) {
+    LaunchedEffect(reloadKey, refreshKey, scopeKey) {
         piles = null
         val photos = MediaRepository(context.contentResolver).queryPhotos()
-        val scoped = if (testGalleryOnly) {
-            photos.filter {
-                it.relativePath.orEmpty().startsWith(GallerySeeder.ROOT_RELATIVE_PATH)
-            }
-        } else {
-            photos
-        }
-        piles = PileBuilder.build(scoped)
+        // Identity in a release build: `DebugPileTools` there has no seeder and no flag.
+        piles = PileBuilder.build(DebugPileTools.scopePhotos(photos))
     }
 
     Column(
@@ -122,44 +109,12 @@ fun PileHostScreen(
         Spacer(Modifier.height(16.dp))
 
         if (BuildConfig.DEBUG) {
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                DebugAction(
-                    label = stringResource(R.string.piles_seed),
-                    enabled = busy == null,
-                ) {
-                    scope.launch {
-                        busy = "0 / 500"
-                        runCatching {
-                            GallerySeeder.seed(context) { written, total ->
-                                busy = "$written / $total"
-                            }
-                        }.onFailure { busy = "seed failed: ${it.message}" }
-                            .onSuccess { busy = null; reloadKey++ }
-                    }
-                }
-                DebugAction(
-                    label = if (testGalleryOnly) {
-                        stringResource(R.string.piles_scope_test)
-                    } else {
-                        stringResource(R.string.piles_scope_all)
-                    },
-                    enabled = busy == null,
-                ) {
-                    testGalleryOnly = !testGalleryOnly
-                }
-                DebugAction(
-                    label = stringResource(R.string.piles_wipe),
-                    enabled = busy == null,
-                    danger = true,
-                ) {
-                    scope.launch {
-                        busy = "wiping…"
-                        runCatching { GallerySeeder.dangerouslyWipeTestGallery(context) }
-                            .onFailure { busy = "wipe failed: ${it.message}" }
-                            .onSuccess { busy = null; reloadKey++ }
-                    }
-                }
-            }
+            DebugPileTools.Chips(
+                busy = busy,
+                onBusy = { busy = it },
+                onGalleryChanged = { reloadKey++ },
+                onScopeChanged = { scopeKey++ },
+            )
             Spacer(Modifier.height(16.dp))
         }
 
@@ -202,30 +157,6 @@ private fun PileRow(pile: Pile, onClick: () -> Unit, modifier: Modifier = Modifi
             ),
             style = PsType.pileMeta,
             color = PsColor.Steel,
-        )
-    }
-}
-
-@Composable
-private fun DebugAction(
-    label: String,
-    enabled: Boolean,
-    danger: Boolean = false,
-    onClick: () -> Unit,
-) {
-    val tint = if (danger) PsColor.Sweep else PsColor.Gold
-    Box(
-        modifier = Modifier
-            .clip(RoundedCornerShape(50))
-            .border(1.dp, tint.copy(alpha = if (enabled) 0.6f else 0.2f), RoundedCornerShape(50))
-            .clickable(enabled = enabled, onClick = onClick)
-            .padding(horizontal = 14.dp, vertical = 8.dp),
-        contentAlignment = Alignment.Center,
-    ) {
-        Text(
-            text = label,
-            style = PsType.pileMeta,
-            color = tint.copy(alpha = if (enabled) 1f else 0.4f),
         )
     }
 }

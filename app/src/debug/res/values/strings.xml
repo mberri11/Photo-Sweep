@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Debug-only strings for the pile-host development chrome.
+
+    These live here, not in `main/res`, so they are absent from the release APK's string pool
+    rather than merely unreachable in it. A shipped build that still carries the words "Wipe
+    test gallery" is a build that can be asked about, and the honest answer would be awkward.
+
+    `piles_empty` is an override: the debug build's empty state points at the seeder, the
+    release build's says nothing about a test gallery because there isn't one.
+-->
+<resources>
+    <string name="piles_seed">Seed 500 test photos</string>
+    <string name="piles_wipe">Wipe test gallery</string>
+    <string name="piles_scope_test">Scope: test gallery</string>
+    <string name="piles_scope_all">Scope: whole gallery</string>
+
+    <string name="piles_empty">No piles yet. Seed the test gallery to try the sweep loop.</string>
+</resources>

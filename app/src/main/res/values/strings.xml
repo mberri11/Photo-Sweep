@@ -78,15 +78,17 @@
     <string name="sweep_finished_action">Review sweep</string>
     <string name="sweep_empty">This pile is empty.</string>
 
-    <!-- Temporary host screen. Replaced by the designed home screen in a later stage. -->
+    <!--
+        Temporary host screen. Replaced by the designed home screen in a later stage.
+
+        The seed / scope / wipe chip labels are NOT here. They are debug chrome and live in
+        `src/debug/res`, so the release APK's string pool has no trace of them. `piles_empty`
+        is overridden there too, because the release build has no test gallery to point at.
+    -->
     <string name="piles_title">Piles</string>
     <string name="piles_subtitle">%1$d photos · %2$s</string>
     <string name="piles_pile_line">%1$d photos · %2$s</string>
-    <string name="piles_empty">No piles yet. Seed the test gallery to try the sweep loop.</string>
-    <string name="piles_seed">Seed 500 test photos</string>
-    <string name="piles_wipe">Wipe test gallery</string>
-    <string name="piles_scope_test">Scope: test gallery</string>
-    <string name="piles_scope_all">Scope: whole gallery</string>
+    <string name="piles_empty">No piles yet.</string>
     <string name="piles_working">Working…</string>
     <string name="piles_refresh">Refresh</string>
     <string name="pile_screenshots">Screenshots</string>

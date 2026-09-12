@@ -14,14 +14,27 @@ import java.io.File
  */
 class SourceHygieneTest {
 
-    private val mainSources: List<File> by lazy {
-        val candidates = listOf(File("src/main/java"), File("app/src/main/java"))
-        val root = candidates.firstOrNull { it.isDirectory }
-        requireNotNull(root) {
-            "could not locate main sources from ${File("").absolutePath}"
+    private val module: File by lazy {
+        val src = listOf(File("src"), File("app/src")).firstOrNull { it.isDirectory }
+        requireNotNull(src?.absoluteFile?.parentFile) {
+            "could not locate the app module from ${File("").absolutePath}"
         }
-        root.walkTopDown().filter { it.isFile && it.extension == "kt" }.toList()
     }
+
+    private fun variantSources(variant: String): List<File> =
+        File(module, "src/$variant/java")
+            .walkTopDown()
+            .filter { it.isFile && it.extension == "kt" }
+            .toList()
+
+    /** What ships. Every rule below applies here unless it says otherwise. */
+    private val mainSources: List<File> by lazy { variantSources("main") }
+
+    /**
+     * The debug variant. It is not shipped, but the seeder inside it writes and deletes real
+     * files on a real device, so the naming rule about destruction applies to it too.
+     */
+    private val debugSources: List<File> by lazy { variantSources("debug") }
 
     /**
      * Strips comments before matching. These rules are about what the code *does*; a scan
@@ -91,8 +104,9 @@ class SourceHygieneTest {
      * the user a dialog it drew itself. That is what makes the consent real rather than a
      * checkbox the app draws and then ignores.
      *
-     * The debug seeder is the exception: it writes and deletes its own synthetic files, and
-     * is excluded by path.
+     * The debug seeder is the exception: it writes and deletes its own synthetic files. It
+     * is excluded not by a path filter but by living in the debug variant, which this scan
+     * does not read.
      *
      * Room writes are not MediaStore writes and are deliberately not matched here — the
      * receiver has to be a resolver.
@@ -100,7 +114,6 @@ class SourceHygieneTest {
     @Test
     fun `nothing mutates MediaStore through the content resolver`() {
         val offenders = mainSources
-            .filter { !it.path.contains("/debug/") }
             .filter { RESOLVER_MUTATION.containsMatchIn(it.code()) }
             .map { it.name }
 
@@ -128,10 +141,15 @@ class SourceHygieneTest {
         }
     }
 
-    /** Anything that can destroy user data announces itself in its name. */
+    /**
+     * Anything that can destroy user data announces itself in its name.
+     *
+     * Scanned across main *and* debug: the seeder's wipe deletes real files off a real
+     * device, and "it never ships" is no comfort to whoever is holding that device.
+     */
     @Test
     fun `every permanent delete lives in a dangerously-named function`() {
-        val deleters = mainSources.filter { ".delete(" in it.code() }
+        val deleters = (mainSources + debugSources).filter { ".delete(" in it.code() }
         assertTrue("expected the seeder's wipe to be found", deleters.isNotEmpty())
 
         deleters.forEach { file ->

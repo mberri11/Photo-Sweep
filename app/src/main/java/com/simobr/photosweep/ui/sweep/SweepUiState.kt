@@ -40,6 +40,20 @@ data class SweepUiState(
 
     val total: Int get() = photos.size
 
+    /**
+     * The counter's numerator, for `"%d / %d"` in the header.
+     *
+     * [currentIndex] is a cursor: it is 0 while the first card is still on screen, which is
+     * correct for `photos[currentIndex]` and wrong for a human, who is looking at photo one
+     * of 1,721 and not photo zero. So the display position is the cursor plus one, clamped so
+     * the finished state reads `218 / 218` rather than `219 / 218`, and an empty pile reads
+     * `0 / 0` rather than `1 / 0`.
+     *
+     * Nothing else moves. [progress] and every internal use of [currentIndex] stay on the
+     * cursor — this value exists only to be printed.
+     */
+    val displayIndex: Int get() = minOf(currentIndex + 1, total)
+
     val sweptCount: Int get() = decisions.count { it.direction == SweepDirection.Sweep }
 
     val keptCount: Int get() = decisions.count { it.direction == SweepDirection.Keep }

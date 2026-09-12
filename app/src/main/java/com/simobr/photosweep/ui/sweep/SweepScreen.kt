@@ -325,7 +325,7 @@ private fun SweepTopBar(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Text(
-                    text = stringResource(R.string.sweep_index, state.currentIndex, state.total),
+                    text = stringResource(R.string.sweep_index, state.displayIndex, state.total),
                     style = PsType.pileName,
                     color = PsColor.Frame,
                     modifier = Modifier.testTag(SweepTags.INDEX),
@@ -459,27 +459,30 @@ private fun PhotoCard(
         )
 
         if (showDateStrip) {
+            // The gradient container is taller than its text by DateStripSpec.gradientRunUp,
+            // so the first line sits inside the scrim rather than at its transparent edge.
             Column(
                 modifier = Modifier
                     .align(Alignment.BottomStart)
                     .fillMaxWidth()
-                    .background(
-                        Brush.verticalGradient(
-                            listOf(Color.Transparent, PsColor.Midnight.copy(alpha = 0.88f)),
-                        ),
-                    )
-                    .padding(horizontal = 16.dp, vertical = 14.dp),
+                    .background(Brush.verticalGradient(*DateStripSpec.stops))
+                    .padding(
+                        start = DateStripSpec.textPadH,
+                        end = DateStripSpec.textPadH,
+                        top = DateStripSpec.topPad,
+                        bottom = DateStripSpec.textPadV,
+                    ),
             ) {
                 Text(
                     text = PhotoFormat.captureStamp(photo),
                     style = PsType.pileName,
-                    color = PsColor.Frame,
+                    color = DateStripSpec.stampColour,
                 )
                 Spacer(Modifier.height(2.dp))
                 Text(
                     text = PhotoFormat.detailLine(photo),
                     style = PsType.photoMeta,
-                    color = PsColor.Steel,
+                    color = DateStripSpec.detailColour,
                 )
             }
         }
