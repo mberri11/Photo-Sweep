@@ -95,6 +95,25 @@ misrepresentation risk as well as simply being a lie.
 - ✅ "Your photos never leave your phone. … The only thing that uses the network is
   Google's ad service."
 - ✅ "Photo Sweep has no upload code. The only network traffic is Google's ad service."
+- ✅ Two sentences in the permission flow, both pinned byte-for-byte by
+  `PermissionManifestAndCopyTest`:
+  - `permission_point_analysis_body` — "No faces, no places, no labels. Photo Sweep reads
+    file names, dates and sizes to build the piles."
+  - `permission_partial_body` — "It needs to see all of them to tell you which folders are
+    using your storage."
+
+  Both used to promise duplicate detection. The first ended *"…to build the piles, and
+  compares images to each other on your phone to find duplicates."*; the second read *"It
+  needs to see all of them to build piles and find duplicates."* The duplicates engine is cut
+  from 1.0, and a permission rationale describing a feature the build does not contain is a
+  misrepresentation in the one place the user is being asked to trust it. Both clauses are
+  restored in the same commit that ships the engine, and not before.
+
+  The replacement for the second is deliberately not a trim of the old line. That sentence
+  exists to say why partial access is not enough, which is the same argument section 1 makes
+  to Play about the system photo picker: a user-chosen subset cannot answer which folder is
+  eating the storage. The in-product copy and the declaration form now make one argument
+  instead of two.
 - ❌ **Never restore** the earlier draft copy: *"The app ships without the internet
   permission, so it cannot send anything anywhere"* and *"Photo Sweep has no internet
   permission — check it yourself."* Both are false in any build containing AdMob — the

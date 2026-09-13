@@ -14,6 +14,7 @@
     <string name="piles_wipe">Wipe test gallery</string>
     <string name="piles_scope_test">Scope: test gallery</string>
     <string name="piles_scope_all">Scope: whole gallery</string>
+    <string name="piles_reset_consent">Reset consent</string>
 
     <string name="piles_empty">No piles yet. Seed the test gallery to try the sweep loop.</string>
 </resources>

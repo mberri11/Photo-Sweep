@@ -2,10 +2,12 @@
 <resources>
 
     <!-- The post-splash theme. Compose owns every pixel from here on; this exists only so
-         the window background is black and the system bars are transparent before the
-         first frame, which is what makes edge-to-edge look intentional instead of flashing. -->
+         the window background is Midnight and the system bars are transparent before the
+         first frame, which is what makes edge-to-edge look intentional instead of flashing.
+         Midnight, not black: the first Compose frame is #080C14, and anything else here is a
+         visible step on an OLED panel. -->
     <style name="Theme.PhotoSweep" parent="android:Theme.Material.NoActionBar">
-        <item name="android:windowBackground">@color/ps_black</item>
+        <item name="android:windowBackground">@color/ps_midnight</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
         <item name="android:windowLightStatusBar">false</item>
@@ -15,7 +17,7 @@
     </style>
 
     <style name="Theme.PhotoSweep.Starting" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/ps_black</item>
+        <item name="windowSplashScreenBackground">@color/ps_midnight</item>
         <item name="windowSplashScreenAnimatedIcon">@mipmap/ic_launcher_foreground</item>
         <item name="postSplashScreenTheme">@style/Theme.PhotoSweep</item>
     </style>

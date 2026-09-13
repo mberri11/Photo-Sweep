@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Photo Sweep is a black app. Photos are the only colour on screen. -->
-    <color name="ps_black">#FF000000</color>
+    <!--
+        Photo Sweep is a dark app. Photos are the only colour on screen.
+
+        This is PsColor.Midnight, and it has to be: the window background and the splash
+        background are the frames Compose has not painted yet. They were pure black, so launch
+        went #000000 → #080C14 at the first Compose frame — a step that is invisible on LCD and
+        plainly visible on OLED.
+    -->
+    <color name="ps_midnight">#FF080C14</color>
     <color name="ps_white">#FFFFFFFF</color>
 </resources>

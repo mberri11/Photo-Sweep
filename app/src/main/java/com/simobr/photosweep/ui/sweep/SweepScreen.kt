@@ -19,6 +19,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -61,6 +62,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
@@ -91,6 +93,32 @@ private const val TOAST_VISIBLE_MS = 4_000
 
 /** Reserved lane at the bottom of the swipe surface. The toast lives here and only here. */
 private val ToastLane = 96.dp
+
+/**
+ * How much of the available width the card may take on a narrow screen.
+ *
+ * The frozen 306dp card is drawn for a 360dp-wide phone. On anything narrower it would reach
+ * within 27dp of both edges and the two edge capsules would have nowhere to sit, so below
+ * ~392dp of available width the card shrinks instead of the layout breaking.
+ */
+internal const val CARD_WIDTH_FRACTION = 0.78f
+
+/**
+ * The card's width for a given available width. Never wider than the frozen [PsDim.photoCardW].
+ *
+ * Pure arithmetic on Dp so it can be asserted on the JVM — the sizes this returns are the one
+ * part of the card that is no longer a literal, and `SweepCardSizeTest` pins both ends of it.
+ */
+internal fun sweepCardWidth(availableWidth: Dp): Dp =
+    minOf(PsDim.photoCardW, availableWidth * CARD_WIDTH_FRACTION)
+
+/**
+ * The card's height for a given width, from the frozen 306:448 ratio.
+ *
+ * Derived rather than scaled independently: the aspect ratio is a design constant and a card
+ * that changed shape with the window would crop photos differently on different devices.
+ */
+internal fun sweepCardHeight(width: Dp): Dp = width * (PsDim.photoCardH / PsDim.photoCardW)
 
 /**
  * The core loop.
@@ -174,12 +202,17 @@ fun SweepScreen(
                 glow = { SweepGesture.edgeGlow(offsetX.value.coerceAtLeast(0f), cardWidthPx) },
             )
 
-            Box(
+            BoxWithConstraints(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(bottom = ToastLane),
                 contentAlignment = Alignment.Center,
             ) {
+                // Measured once, here, and handed to both cards so the ghost cannot drift out
+                // of register with the card in front of it.
+                val cardW = sweepCardWidth(maxWidth)
+                val cardH = sweepCardHeight(cardW)
+
                 when {
                     state.isLoading -> Unit
 
@@ -198,11 +231,11 @@ fun SweepScreen(
                     else -> {
                         // Exactly one ghost behind the top card. A fanned deck of three looks
                         // busy and implies a depth the user cannot act on.
-                        state.next?.let { GhostCard(it) }
+                        state.next?.let { GhostCard(it, width = cardW, height = cardH) }
 
                         Box(
                             modifier = Modifier
-                                .size(PsDim.photoCardW, PsDim.photoCardH)
+                                .size(cardW, cardH)
                                 .drawBehind { }
                         ) {
                             when (effect) {
@@ -220,6 +253,8 @@ fun SweepScreen(
 
                         PhotoCard(
                             photo = photo,
+                            width = cardW,
+                            height = cardH,
                             modifier = Modifier
                                 .testTag(SweepTags.CARD)
                                 .onSizeChanged { cardWidthPx = it.width.toFloat() }
@@ -420,9 +455,16 @@ private fun PlusOne(token: Long, modifier: Modifier = Modifier) {
 
 /** The ghost behind: 0.94 scale, 0.30 alpha. Not interactive. */
 @Composable
-private fun GhostCard(photo: Photo, modifier: Modifier = Modifier) {
+private fun GhostCard(
+    photo: Photo,
+    width: Dp,
+    height: Dp,
+    modifier: Modifier = Modifier,
+) {
     PhotoCard(
         photo = photo,
+        width = width,
+        height = height,
         showDateStrip = false,
         modifier = modifier
             .testTag(SweepTags.GHOST)
@@ -437,13 +479,17 @@ private fun GhostCard(photo: Photo, modifier: Modifier = Modifier) {
 @Composable
 private fun PhotoCard(
     photo: Photo,
+    width: Dp,
+    height: Dp,
     modifier: Modifier = Modifier,
     showDateStrip: Boolean = true,
 ) {
+    // Radius and rim stay literal. They are edge treatments, not proportions: a 20dp corner
+    // scaled down with the card would read as a different corner, and the 2dp rim would vanish.
     val shape = RoundedCornerShape(PsDim.photoCardRadius)
     Box(
         modifier = modifier
-            .size(PsDim.photoCardW, PsDim.photoCardH)
+            .size(width, height)
             .clip(shape)
             .background(PsColor.Panel)
             .border(PsDim.cardRim, PsColor.Frame.copy(alpha = 0.9f), shape),

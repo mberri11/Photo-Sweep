@@ -22,6 +22,20 @@ interface PendingMarkDao {
     @Query("SELECT * FROM pending_mark ORDER BY markedAt ASC")
     suspend fun allMarks(): List<PendingMark>
 
+    /**
+     * Every photo currently carrying a mark, in any pile.
+     *
+     * `PileBuilder` drops these from every pile it builds. It has to, because overlay piles
+     * share their photos with folder and month piles: without this, a photo swept from
+     * "Biggest files" would be offered again, unmarked, in its month pile — the same photo
+     * twice, the second time as though the first decision had never happened.
+     *
+     * Ids only. The rows themselves are nobody's business here, and a 20,000-mark gallery
+     * should not pay for building entities to throw away.
+     */
+    @Query("SELECT mediaId FROM pending_mark")
+    suspend fun markedMediaIds(): List<Long>
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun upsertAll(marks: List<PendingMark>)
 

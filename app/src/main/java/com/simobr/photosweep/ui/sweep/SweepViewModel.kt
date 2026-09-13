@@ -132,6 +132,23 @@ class SweepViewModel(
         schedulePersist()
     }
 
+    /**
+     * Throws this pile's marks away, in memory and on disk.
+     *
+     * The only caller is the "Discard" button on the back-out dialog, and it exists because
+     * clearing the table alone would not work: [effectiveMarks] carries [baseline] forward for
+     * any photo this pass has not re-decided, so the next debounced write would put every
+     * discarded mark straight back. The pending write is cancelled first, then both halves of
+     * the state are emptied, and only then is the table cleared — in that order, so a write
+     * that is already in flight can only ever write less than before, never more.
+     */
+    suspend fun discardMarks() {
+        persistJob?.cancel()
+        baseline = emptyMap()
+        _state.update { it.copy(decisions = emptyList(), lastAction = null) }
+        dao.clearPile(pileId)
+    }
+
     /** Hides the toast without changing any decision. */
     fun dismissToast() {
         _state.update { it.copy(lastAction = null) }

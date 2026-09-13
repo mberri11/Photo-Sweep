@@ -57,7 +57,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.PhotoSweep.Starting">
+        android:theme="@style/Theme.PhotoSweep.Starting"
+        android:enableOnBackInvokedCallback="true">
 
         <!--
             Required by the Mobile Ads SDK. Without it MobileAdsInitProvider throws while
@@ -69,10 +70,22 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="${admobAppId}" />
 
+        <!--
+            No android:configChanges.
+
+            It used to list orientation|screenSize|screenLayout|keyboardHidden|uiMode, which
+            meant the Activity was never recreated on a rotation — so every adaptive bug stayed
+            hidden and nothing had ever exercised state restoration. Compose recomposes on a
+            configuration change by itself, and the navigation state is now held in
+            `rememberSaveable`, so the recreation it was suppressing is the thing that proves
+            the app survives one.
+
+            PROPERTY_COMPAT_ALLOW_RESTRICTED_RESIZABILITY is deliberately not declared: opting
+            out of resizability is opting out of large screens.
+        -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
-            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|uiMode"
             android:theme="@style/Theme.PhotoSweep.Starting"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>

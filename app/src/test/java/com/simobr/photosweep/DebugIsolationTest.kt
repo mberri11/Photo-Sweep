@@ -76,14 +76,19 @@ class DebugIsolationTest {
         )
     }
 
+    /**
+     * The host was `ui/piles/PileHostScreen.kt` until Stage 7 replaced it with
+     * `ui/home/HomeScreen.kt`. The rule is about whichever file runs the pile query, not about
+     * a filename, so the path moved with it.
+     */
     @Test
     fun `the pile host itself carries no scope filter`() {
-        val host = File(module, "src/main/java/com/simobr/photosweep/ui/piles/PileHostScreen.kt")
-        assertTrue("PileHostScreen.kt not found", host.isFile)
+        val host = File(module, "src/main/java/com/simobr/photosweep/ui/home/HomeScreen.kt")
+        assertTrue("HomeScreen.kt not found", host.isFile)
 
         val code = host.code()
         FILTER_MARKERS.forEach { marker ->
-            assertFalse("PileHostScreen references '$marker'", marker in code)
+            assertFalse("HomeScreen references '$marker'", marker in code)
         }
         assertTrue(
             "the host must route its query through DebugPileTools",

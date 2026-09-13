@@ -4,6 +4,17 @@
 val sampleAdmobAppId = "ca-app-pub-3940256099942544~3347511713"
 val realAdmobAppId = providers.gradleProperty("photosweep.admobAppId")
 
+/**
+ * Google's published test ad unit IDs. These serve test ads to anyone, anywhere, and are the
+ * documented values for development — but an ad unit is also how revenue is attributed, so a
+ * release built on these earns nothing and silently reports nothing. The release build refuses
+ * them the same way it refuses the sample App ID.
+ */
+val testBannerUnitId = "ca-app-pub-3940256099942544/9214589741"
+val testInterstitialUnitId = "ca-app-pub-3940256099942544/1033173712"
+val realBannerUnitId = providers.gradleProperty("photosweep.bannerUnitId")
+val realInterstitialUnitId = providers.gradleProperty("photosweep.interstitialUnitId")
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -32,9 +43,21 @@ android {
         debug {
             isMinifyEnabled = false
             manifestPlaceholders["admobAppId"] = sampleAdmobAppId
+            buildConfigField("String", "BANNER_UNIT_ID", "\"$testBannerUnitId\"")
+            buildConfigField("String", "INTERSTITIAL_UNIT_ID", "\"$testInterstitialUnitId\"")
         }
         release {
             manifestPlaceholders["admobAppId"] = realAdmobAppId.getOrElse("MISSING_ADMOB_APP_ID")
+            buildConfigField(
+                "String",
+                "BANNER_UNIT_ID",
+                "\"${realBannerUnitId.getOrElse("MISSING_BANNER_UNIT_ID")}\"",
+            )
+            buildConfigField(
+                "String",
+                "INTERSTITIAL_UNIT_ID",
+                "\"${realInterstitialUnitId.getOrElse("MISSING_INTERSTITIAL_UNIT_ID")}\"",
+            )
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
@@ -146,13 +169,53 @@ dependencies {
  *
  * Set it in `local.properties` or `~/.gradle/gradle.properties`:
  *     photosweep.admobAppId=ca-app-pub-XXXXXXXXXXXXXXXX~YYYYYYYYYY
+ *
+ * ## Why the value is resolved into locals first
+ *
+ * Both `val`s below are deliberately declared *inside* `configureEach` rather than at the top
+ * of this script, and that is not a style preference — it is the whole fix.
+ *
+ * A `doFirst` action is stored in the configuration cache so it can be replayed without
+ * re-running configuration. Top-level declarations in a `.gradle.kts` file compile to members
+ * of the script class, so a lambda that reads one does not capture a `Boolean` — it captures
+ * the **script object** in order to go and read the field. The configuration cache cannot
+ * serialise that, and said so:
+ *
+ *     Task `:app:preReleaseBuild` of type `AndroidVariantTask`: cannot serialize Gradle
+ *     script object references as these are not supported with the configuration cache
+ *
+ * which failed every release build at configuration time, with `configuration-cache=true` set
+ * in `gradle.properties`. Resolving the provider here, inside the configuration action that is
+ * never itself serialised, leaves `doFirst` capturing one `Boolean` and one `String` and
+ * nothing else.
+ *
+ * Reading the property at configuration time also makes it a configuration-cache input, so
+ * passing a different `photosweep.admobAppId` invalidates the entry rather than silently
+ * reusing the previous answer.
+ *
+ * The guard itself is unchanged: no `photosweep.admobAppId`, no release build, same message.
  */
-val hasRealAdmobAppId = realAdmobAppId.isPresent
 tasks.matching { it.name == "preReleaseBuild" }.configureEach {
+    // Resolved into locals for the configuration cache — see the note above. Note the types:
+    // a Boolean and a String, and deliberately NOT a List. A `buildList` here captured a
+    // `kotlin.collections.builders.SerializedCollection`, which the configuration cache stores
+    // and then cannot read back ("Index 53 out of bounds for length 4"), failing every release
+    // build at configuration time. Same lesson as the script-reference capture above: the
+    // doFirst may only close over values the cache can trivially serialise.
+    val missingNames = listOf(
+        "photosweep.admobAppId" to realAdmobAppId.isPresent,
+        "photosweep.bannerUnitId" to realBannerUnitId.isPresent,
+        "photosweep.interstitialUnitId" to realInterstitialUnitId.isPresent,
+    ).filterNot { it.second }.joinToString(", ") { it.first }
+
+    val allPresent = missingNames.isEmpty()
+    val missingMessage =
+        "Missing AdMob configuration for the release build: $missingNames. Set them in " +
+            "local.properties or ~/.gradle/gradle.properties. See RELEASE.md section 3. " +
+            "Shipping Google's test ad unit IDs would serve test ads to real users, breach the " +
+            "AdMob policy, and attribute no revenue."
+
     doFirst {
-        check(hasRealAdmobAppId) {
-            "Missing AdMob App ID for the release build. Set photosweep.admobAppId in " +
-                "local.properties or ~/.gradle/gradle.properties. See RELEASE.md."
-        }
+        check(allPresent) { missingMessage }
     }
 }

@@ -18,7 +18,7 @@
     <string name="permission_point_privacy_body">There is no account, no cloud, no upload. Photo Sweep has no code that can send a photo anywhere. The only thing that uses the network is Google\'s ad service.</string>
 
     <string name="permission_point_analysis_title">No photo is analysed for content.</string>
-    <string name="permission_point_analysis_body">No faces, no places, no labels. Photo Sweep reads file names, dates and sizes to build the piles, and compares images to each other on your phone to find duplicates.</string>
+    <string name="permission_point_analysis_body">No faces, no places, no labels. Photo Sweep reads file names, dates and sizes to build the piles.</string>
 
     <string name="permission_point_consent_title">Nothing goes without your word.</string>
     <string name="permission_point_consent_body">Swiping only marks a photo. You confirm once at the end, and everything then waits 30 days in Android\'s Trash where you can put it back.</string>
@@ -41,7 +41,7 @@
         <item quantity="one">Photo Sweep can only see %1$d photo right now.</item>
         <item quantity="other">Photo Sweep can only see %1$d photos right now.</item>
     </plurals>
-    <string name="permission_partial_body">It needs to see all of them to build piles and find duplicates.</string>
+    <string name="permission_partial_body">It needs to see all of them to tell you which folders are using your storage.</string>
     <string name="permission_partial_action">Open permission settings</string>
     <string name="permission_partial_footer">Choose “Allow all” under Photos and videos.</string>
 
@@ -79,6 +79,22 @@
     <string name="sweep_empty">This pile is empty.</string>
 
     <!--
+        The back-out dialog.
+
+        A stray back gesture two hundred swipes into a pile must not silently throw the work
+        away, and it must not silently keep it either — the user pressed back, so they are owed
+        a choice. "Keep marks" is the confirm button because keeping is the safe half: nothing
+        is destroyed either way, but one of the two costs the user their afternoon.
+    -->
+    <string name="sweep_back_title">Keep your marks?</string>
+    <plurals name="sweep_back_body">
+        <item quantity="one">You have marked %1$d photo for sweeping. Nothing has been deleted yet.</item>
+        <item quantity="other">You have marked %1$d photos for sweeping. Nothing has been deleted yet.</item>
+    </plurals>
+    <string name="sweep_back_keep">Keep marks</string>
+    <string name="sweep_back_discard">Discard</string>
+
+    <!--
         Temporary host screen. Replaced by the designed home screen in a later stage.
 
         The seed / scope / wipe chip labels are NOT here. They are debug chrome and live in
@@ -95,6 +111,33 @@
     <string name="pile_whatsapp">WhatsApp</string>
     <string name="pile_downloads">Downloads</string>
     <string name="pile_duplicates">Duplicates</string>
+
+    <!--
+        The two overlay piles. Their members are also in a folder or month pile, so the titles
+        have to read as questions about the library rather than as places in it — a user who
+        sees "Biggest files" above "March 2026" should not expect the two to be exclusive.
+    -->
+    <string name="pile_bigfiles">Biggest files</string>
+    <string name="pile_oldshots">Old screenshots</string>
+
+    <!--
+        Home, screen 03.
+
+        The empty state names the favourites rule. A user whose gallery is mostly starred sees
+        a short list and concludes the app is broken; the second line is the fifteen-second
+        explanation, and it is the only place the rule is stated in the product.
+    -->
+    <string name="home_empty_title">Nothing left to sweep.</string>
+    <string name="home_empty_body">Your gallery is clean, or everything in it is a favourite.</string>
+
+    <!-- Bottom navigation. Three destinations, no more — see SCREENS.md. -->
+    <string name="nav_piles">Piles</string>
+    <string name="nav_trash">Trash</string>
+    <string name="nav_settings">Settings</string>
+
+    <!-- Screen titles for the two destinations Stage 8 fills in. -->
+    <string name="trash_title">Trash</string>
+    <string name="settings_title">Settings</string>
 
     <!-- Confirm, screen 08. The one destructive decision in the app. -->
     <string name="confirm_eyebrow">END OF PILE</string>
@@ -147,6 +190,55 @@
         is not configurable. This static line replaces the row that used to offer 7/30/60.
     -->
     <string name="settings_trash_line">Trash is Android\'s own. Swept photos also appear in Google Photos → Bin.</string>
+
+    <!--
+        Trash, screen 10/11.
+
+        The subtitle states the 30 days in the same breath as the count, because the count is
+        the number a user reads as "space I could get back" and the retention is the reason it
+        has not come back yet. The empty state reuses settings_trash_line rather than restating
+        it: one sentence about whose trash this is, in one place.
+    -->
+    <string name="trash_subtitle">%1$d photos · %2$s · removed for good after 30 days</string>
+    <string name="trash_empty_title">Trash is empty.</string>
+    <string name="trash_restore_all">Restore all</string>
+    <string name="trash_restore_selected">Restore %1$d</string>
+    <string name="trash_delete_selected">Delete %1$d</string>
+    <string name="trash_selected">%1$d selected</string>
+
+    <!--
+        Settings, screen 13. Five sections and no sixth.
+
+        No theme picker: the app is one dark scheme by design. No retention picker: the 30 days
+        belong to Android and are not configurable — see RELEASE.md section 6. No "rate us", no
+        "share app", no social links.
+    -->
+    <string name="settings_trash_caption">Trash</string>
+    <string name="settings_open_trash">Open Trash</string>
+
+    <string name="settings_sweeping_caption">Sweeping</string>
+    <string name="settings_haptics">Haptics</string>
+    <string name="settings_haptics_sub">A tick when a card commits.</string>
+
+    <string name="settings_privacy_policy">Privacy policy</string>
+
+    <string name="settings_about_caption">About</string>
+    <string name="settings_version_row">Version</string>
+    <string name="settings_version_value">%1$s (%2$d)</string>
+    <string name="settings_licences">Open-source licences</string>
+
+    <!--
+        Licences, reached from Settings → About.
+
+        The Manrope OFL text has been committed in assets since the fonts landed with nothing
+        in the app that displayed it, which is a licence-compliance gap rather than an
+        oversight: the SIL Open Font License requires the notice to ship *with* the font. This
+        screen is where it ships. The block below names the remaining dependencies; their
+        licences are Apache 2.0 and are not reproduced in full, which Apache 2.0 permits so
+        long as the notice is given.
+    -->
+    <string name="licences_notices">AndroidX and Jetpack Compose — Apache License 2.0\nRoom — Apache License 2.0\nCoil — Apache License 2.0\nGoogle Mobile Ads SDK and User Messaging Platform — Google APIs Terms of Service\n\nManrope — SIL Open Font License 1.1. Full text follows.</string>
+    <string name="licences_ofl_missing">The bundled licence file could not be read.</string>
 
     <!-- Home, screen 03. Same honesty rule as the success screen. -->
     <string name="home_stat_caption">SWEPT</string>

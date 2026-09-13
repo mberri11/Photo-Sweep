@@ -74,6 +74,17 @@ fun SuccessScreen(
     onEmptyTrash: () -> Unit,
     onBack: () -> Unit,
     modifier: Modifier = Modifier,
+    /**
+     * The app's one banner slot, passed in rather than constructed here.
+     *
+     * A slot, so this file imports nothing from `ads/` and the screen stays testable without an
+     * ad SDK — and so that the *only* call site of the banner is the success route in
+     * `PhotoSweepRoot`, which `AdPlacementTest` asserts by reading the source.
+     *
+     * It sits below "Back to piles" and inside the screen's `safeDrawing` padding, so it is
+     * above the navigation-bar inset rather than underneath it.
+     */
+    banner: @Composable () -> Unit = {},
 ) {
     Column(
         modifier = modifier
@@ -204,6 +215,10 @@ fun SuccessScreen(
                 .padding(horizontal = 22.dp, vertical = 12.dp),
         )
         Spacer(Modifier.height(20.dp))
+
+        // Last thing on the screen, under the action. The slot reserves its own height, so an
+        // ad that arrives late cannot push the figure above it.
+        banner()
     }
 }
 

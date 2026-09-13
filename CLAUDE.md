@@ -22,6 +22,11 @@ If a command failed, print the failure. Do not summarise it as "minor issue".
 
 STOP means STOP. Do not begin the next stage. Do not "get a head start".
 
+A test that this stage's own change makes false is inside this stage's scope, even when the
+scope line does not name it. Fix it in the same commit and say in the report which assertion
+you changed and why it stopped being true. Never leave a red suite to stay inside a scope
+line, and never delete an assertion when inverting it would pin the new rule instead.
+
 ## PROJECT FACTS
 
 - Package / applicationId: `com.simobr.photosweep` (studio: Simobr Studio, matching the

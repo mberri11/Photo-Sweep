@@ -14,6 +14,8 @@ fun pileTitle(kind: PileKind): String = when (kind) {
     PileKind.WhatsApp -> stringResource(R.string.pile_whatsapp)
     PileKind.Downloads -> stringResource(R.string.pile_downloads)
     PileKind.Duplicates -> stringResource(R.string.pile_duplicates)
+    PileKind.BigFiles -> stringResource(R.string.pile_bigfiles)
+    PileKind.OldShots -> stringResource(R.string.pile_oldshots)
     is PileKind.Month -> MONTH.format(kind.yearMonth)
 }
 

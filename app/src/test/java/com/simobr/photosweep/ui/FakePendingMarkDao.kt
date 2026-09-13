@@ -26,6 +26,8 @@ class FakePendingMarkDao : PendingMarkDao {
 
     override suspend fun allMarks(): List<PendingMark> = rows.values.sortedBy { it.markedAt }
 
+    override suspend fun markedMediaIds(): List<Long> = rows.keys.toList()
+
     override suspend fun upsertAll(marks: List<PendingMark>) {
         writeCount++
         marks.forEach { rows[it.mediaId] = it }

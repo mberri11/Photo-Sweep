@@ -23,6 +23,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.simobr.photosweep.R
+import com.simobr.photosweep.ads.ConsentGate
+import com.simobr.photosweep.ads.SuccessInterstitial
 import com.simobr.photosweep.data.media.Photo
 import com.simobr.photosweep.ui.theme.PsColor
 import com.simobr.photosweep.ui.theme.PsType
@@ -103,6 +105,16 @@ object DebugPileTools {
                 scopeIsTestGallery = !scopeIsTestGallery
                 testGalleryOnly = scopeIsTestGallery
                 onScopeChanged()
+            }
+            DebugAction(
+                label = stringResource(R.string.piles_reset_consent),
+                enabled = busy == null,
+            ) {
+                // Clears the stored UMP choice so the form shows again on the next launch,
+                // which is otherwise only reachable by reinstalling.
+                ConsentGate.resetForDebug(context)
+                SuccessInterstitial.clearForDebug()
+                onBusy("consent reset — relaunch to see the form")
             }
             DebugAction(
                 label = stringResource(R.string.piles_wipe),
